@@ -6,7 +6,7 @@ namespace BBI.JD
 {
     public interface ICheckerRule
     {
-        Guid Id { get; }
+        string Id { get; }
         string Name { get; }
         string Group { get; }
         void Execute(Document document, SLDocument excel);

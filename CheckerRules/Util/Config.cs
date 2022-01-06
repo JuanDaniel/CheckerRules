@@ -46,7 +46,7 @@ namespace BBI.JD.Util
             }
         }
 
-        public static RulesLoadedCollection GetRulesLoaded()
+        public static AddinsCollection GetAddinsLoaded()
         {
             Configuration config = GetConfiguration();
 
@@ -56,14 +56,14 @@ namespace BBI.JD.Util
 
                 if (section != null)
                 {
-                    return section.RulesLoaded;
+                    return section.Addins;
                 }
             }
 
-            return new RulesLoadedCollection();
+            return new AddinsCollection();
         }
 
-        public static void SetRulesAddin(List<RuleAddin> rules)
+        public static void AddAddin(Addin addin)
         {
             Configuration config = GetConfiguration();
 
@@ -73,26 +73,14 @@ namespace BBI.JD.Util
 
                 if (section != null)
                 {
-                    RulesLoadedCollection rulesAddin = new RulesLoadedCollection();
-
-                    foreach (var rule in rules)
-                    {
-                        RulesLoadedElement element = new RulesLoadedElement();
-                        element.Id = rule.Id;
-                        element.Version = rule.Version;
-                        element.Path = rule.Path;
-
-                        rulesAddin.Add(element);
-                    }
-
-                    section.RulesLoaded = rulesAddin;
+                    section.Addins.Add(addin.ToAddinsElement());
 
                     config.Save(ConfigurationSaveMode.Modified);
                 }
             }
         }
 
-        public static void RemoveRulesFromAddin(string path)
+        public static void RemoveAddin(string path)
         {
             Configuration config = GetConfiguration();
 
@@ -102,14 +90,14 @@ namespace BBI.JD.Util
 
                 if (section != null)
                 {
-                    RulesLoadedCollection rulesAddin = new RulesLoadedCollection();
+                    AddinsCollection addins = new AddinsCollection();
 
-                    foreach (var element in GetRulesLoaded().Cast<RulesLoadedElement>().Where(x => x.Path != path))
+                    foreach (var element in GetAddinsLoaded().Cast<AddinsElement>().Where(x => x.Path != path))
                     {
-                        rulesAddin.Add(element);
+                        addins.Add(element);
                     }
 
-                    section.RulesLoaded = rulesAddin;
+                    section.Addins = addins;
 
                     config.Save(ConfigurationSaveMode.Modified);
                 }
@@ -133,42 +121,83 @@ namespace BBI.JD.Util
         }
     }
 
-    public class RulesLoadedElement : ConfigurationElement
+    public class AddinsElement : ConfigurationElement
     {
-        [ConfigurationProperty("id", IsKey = true, IsRequired = true)]
-        public Guid Id
-        {
-            get { return (Guid)this["id"]; }
-            set { this["id"] = value; }
-        }
-        [ConfigurationProperty("version")]
-        public Version Version
-        {
-            get { return (Version)this["version"]; }
-            set { this["version"] = value; }
-        }
-        [ConfigurationProperty("path")]
+        [ConfigurationProperty("path", IsKey = true, IsRequired = true)]
         public string Path
         {
             get { return (string)this["path"]; }
             set { this["path"] = value; }
         }
+        [ConfigurationProperty("version", IsRequired = true)]
+        public string Version
+        {
+            get { return (string)this["version"]; }
+            set { this["version"] = value; }
+        }
+        [ConfigurationProperty("rules", IsRequired = true, IsDefaultCollection = true)]
+        public RulesCollection Rules
+        {
+            get { return (RulesCollection)this["rules"]; }
+            set { this["rules"] = value; }
+        }
     }
 
-    [ConfigurationCollection(typeof(RulesLoadedElement), AddItemName = "update")]
-    public class RulesLoadedCollection : ConfigurationElementCollection
+    [ConfigurationCollection(typeof(AddinsElement), AddItemName = "addin")]
+    public class AddinsCollection : ConfigurationElementCollection
     {
         protected override ConfigurationElement CreateNewElement()
         {
-            return new RulesLoadedElement();
+            return new AddinsElement();
         }
 
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return ((RulesLoadedElement)element).Id;
+            return ((AddinsElement)element).Path;
         }
 
-        public void Add(RulesLoadedElement element)
+        public void Add(AddinsElement element)
+        {
+            BaseAdd(element);
+        }
+    }
+
+    public class RulesElement : ConfigurationElement
+    {
+        [ConfigurationProperty("id", IsKey = true, IsRequired = true)]
+        public string Id
+        {
+            get { return (string)this["id"]; }
+            set { this["id"] = value; }
+        }
+        [ConfigurationProperty("name", IsRequired = true)]
+        public string Name
+        {
+            get { return (string)this["name"]; }
+            set { this["name"] = value; }
+        }
+        [ConfigurationProperty("group", IsRequired = true)]
+        public string Group
+        {
+            get { return (string)this["group"]; }
+            set { this["group"] = value; }
+        }
+    }
+
+    [ConfigurationCollection(typeof(RulesElement), AddItemName = "rule")]
+    public class RulesCollection : ConfigurationElementCollection
+    {
+        protected override ConfigurationElement CreateNewElement()
+        {
+            return new RulesElement();
+        }
+
+        protected override object GetElementKey(ConfigurationElement element)
+        {
+            return ((RulesElement)element).Id;
+        }
+
+        public void Add(RulesElement element)
         {
             BaseAdd(element);
         }
@@ -176,11 +205,11 @@ namespace BBI.JD.Util
 
     public class CheckerRulesConfig : ConfigurationSection
     {
-        [ConfigurationProperty("rulesLoaded", IsDefaultCollection = true)]
-        public RulesLoadedCollection RulesLoaded
+        [ConfigurationProperty("addins", IsDefaultCollection = true)]
+        public AddinsCollection Addins
         {
-            get { return (RulesLoadedCollection)this["rulesLoaded"]; }
-            set { this["rulesLoaded"] = value; }
+            get { return (AddinsCollection)this["addins"]; }
+            set { this["addins"] = value; }
         }
     }
 }

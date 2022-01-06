@@ -12,17 +12,25 @@ namespace BBI.JD.Util
         /// Load DLL addin containing rules and add these to colletion rules loaded in <c>CheckerRules.config</c>
         /// </summary>
         /// <param name="path">Absolute path to DLL</param>
+        /// <param name="force">Absolute path to DLL</param>
         public static void LoadAddin(string path, bool force = true)
         {
             if (File.Exists(path))
             {
-                if (IsAddinLoaded(path) && force)
+                if (IsAddinLoaded(path))
                 {
-                    Config.RemoveRulesFromAddin(path);
+                    if (force)
+                    {
+                        Config.RemoveAddin(path);
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
 
                 // Only for testing propouse but in Revit enviroment all DLL was loaded automatically
-                /*AppDomain.CurrentDomain.AssemblyResolve += delegate (object sender, ResolveEventArgs e)
+                AppDomain.CurrentDomain.AssemblyResolve += delegate (object sender, ResolveEventArgs e)
                 {
                     if (e.Name == "RevitAPI, Version=21.0.0.0, Culture=neutral, PublicKeyToken=null")
                     {
@@ -30,11 +38,13 @@ namespace BBI.JD.Util
                     }
 
                     return null;
-                };*/
+                };
 
                 Assembly asm = Assembly.LoadFrom(path);
 
-                List<RuleAddin> rules = new List<RuleAddin>();
+                Addin addin = new Addin(path, asm.GetName().Version);
+
+                Dictionary<string, string> rulesId = new Dictionary<string, string>();
 
                 foreach (var type in asm.GetTypes())
                 {
@@ -42,31 +52,97 @@ namespace BBI.JD.Util
 
                     if (obj is ICheckerRule)
                     {
-                        rules.Add(new RuleAddin(((ICheckerRule)obj).Id, asm.GetName().Version, path));
+                        if (rulesId.ContainsKey(((ICheckerRule)obj).Id))
+                        {
+                            throw new RepeatedRuleIdException("The addin has duplicates ID rules.");
+                        }
+
+                        addin.Rules.Add(new Rule(((ICheckerRule)obj).Id, ((ICheckerRule)obj).Name, ((ICheckerRule)obj).Group, addin));
+
+                        rulesId.Add(((ICheckerRule)obj).Id, ((ICheckerRule)obj).Name);
                     }
                 }
 
-                Config.SetRulesAddin(rules);
+                Config.AddAddin(addin);
             }
         }
 
+        /// <summary>
+        /// Check if DLL addin by path is loaded
+        /// </summary>
+        /// <param name="path">Absolute path to DLL</param>
+        /// <returns>Return a boolean value according addin is loaded or not</returns>
         public static bool IsAddinLoaded(string path)
         {
-            return Config.GetRulesLoaded().Cast<RulesLoadedElement>().FirstOrDefault(x => x.Path == path) != null;
+            return Config.GetAddinsLoaded().Cast<AddinsElement>().FirstOrDefault(x => x.Path == path) != null;
         }
     }
 
-    public class RuleAddin
+    public class Addin
     {
-        public Guid Id;
-        public Version Version;
         public string Path;
+        public Version Version;
+        public List<Rule> Rules;
 
-        public RuleAddin() { }
-        public RuleAddin(Guid Id, Version Version, string Path) {
-            this.Id = Id;
-            this.Version = Version;
+        public Addin() { }
+        public Addin(string Path, Version Version)
+        {
             this.Path = Path;
+            this.Version = Version;
+            Rules = new List<Rule>();
         }
+
+        /// <summary>
+        /// Method to map Addin class to AddinsElement use in Configuration
+        /// </summary>
+        /// <returns></returns>
+        public AddinsElement ToAddinsElement()
+        {
+            AddinsElement addin = new AddinsElement();
+            addin.Path = Path;
+            addin.Version = Version.ToString();
+            addin.Rules = new RulesCollection();
+
+            foreach (Rule rule in Rules)
+            {
+                addin.Rules.Add(rule.ToRulesElement());
+            }
+
+            return addin;
+        }
+    }
+
+    public class Rule
+    {
+        public string Id;
+        public string Name;
+        public string Group;
+        public Addin Addin;
+
+        public Rule() { }
+        public Rule(string Id, string Name, string Group, Addin Addin) {
+            this.Id = Id;
+            this.Name = Name;
+            this.Group = Group;
+            this.Addin = Addin;
+        }
+
+        /// <summary>
+        /// Method to map Rule class to RulesElement use in Configuration
+        /// </summary>
+        /// <returns></returns>
+        public RulesElement ToRulesElement()
+        {
+            RulesElement rule = new RulesElement();
+            rule.Id = Id;
+            rule.Name = Name;
+            rule.Group = Group;
+
+            return rule;
+        }
+    }
+
+    public class RepeatedRuleIdException : Exception {
+        public RepeatedRuleIdException(string message) : base(message){}
     }
 }

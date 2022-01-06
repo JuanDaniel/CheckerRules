@@ -11,7 +11,7 @@ namespace AR_Rules
 {
     public class Rule1 : ICheckerRule
     {
-        public Guid Id { get => new Guid(); }
+        public string Id { get => "553a06e6-9bba-43b4-9f5f-7753b79d3e83"; }
 
         public string Name { get => "Not Placed"; }
 
@@ -25,7 +25,7 @@ namespace AR_Rules
 
     public class Rule2 : ICheckerRule
     {
-        public Guid Id { get => new Guid(); }
+        public String Id { get => "71597df6-875b-4680-b209-d6a1f5294608"; }
 
         public string Name { get => "Not Enclosed"; }
 
@@ -39,7 +39,7 @@ namespace AR_Rules
 
     public class Rule3 : ICheckerRule
     {
-        public Guid Id { get => new Guid(); }
+        public string Id { get => "418c324d-99e9-473f-9277-654a5cada65b"; }
 
         public string Name { get => "Redundant"; }
 
