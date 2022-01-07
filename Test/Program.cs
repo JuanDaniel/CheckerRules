@@ -15,8 +15,6 @@ namespace Test
             {
                 form.ShowDialog();
             }
-
-            //Core.LoadAddin(@"D:\WORK\Visual Studio Projects - 2017\Projects\CheckerRules\AR_Rules\bin\Debug\AR_Rules.dll");
         }
     }
 }
