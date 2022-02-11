@@ -29,6 +29,7 @@ namespace BBI.JD.Util
                     }
                 }
 
+                // TODO
                 // Only for testing propouse but in Revit enviroment all DLL was loaded automatically
                 AppDomain.CurrentDomain.AssemblyResolve += delegate (object sender, ResolveEventArgs e)
                 {
@@ -80,11 +81,10 @@ namespace BBI.JD.Util
 
     public class Addin
     {
-        public string Path;
-        public Version Version;
+        private string Path;
+        private Version Version;
         public List<Rule> Rules;
 
-        public Addin() { }
         public Addin(string Path, Version Version)
         {
             this.Path = Path;
@@ -114,12 +114,11 @@ namespace BBI.JD.Util
 
     public class Rule
     {
-        public string Id;
-        public string Name;
-        public string Group;
-        public Addin Addin;
+        private string Id;
+        private string Name;
+        private string Group;
+        private Addin Addin;
 
-        public Rule() { }
         public Rule(string Id, string Name, string Group, Addin Addin) {
             this.Id = Id;
             this.Name = Name;

@@ -1,6 +1,6 @@
 ﻿using Autodesk.Revit.DB;
-using SpreadsheetLight;
 using System;
+using System.Collections.Generic;
 
 namespace BBI.JD
 {
@@ -9,6 +9,6 @@ namespace BBI.JD
         string Id { get; }
         string Name { get; }
         string Group { get; }
-        void Execute(Document document, SLDocument excel);
+        List<Dictionary<string, string>> Execute(Document document);
     }
 }
