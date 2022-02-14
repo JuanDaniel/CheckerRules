@@ -44,6 +44,23 @@ namespace BBI.JD.Forms
             CheckAll(false);
         }
 
+        private void button3_Click(object sender, EventArgs e)
+        {
+            List<ICheckerRule> rules = new List<ICheckerRule>();
+
+            foreach (RulesElement rule in GetCheckedRules(treeView1.Nodes).Select(x => x.Tag).Cast<RulesElement>())
+            {
+                //rule.CurrentConfiguration.
+            }
+
+            if (rules.Count == 0)
+            {
+                MessageBox.Show("You must select at least one rule before executing.", "No rules selected", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+
+                return;
+            }
+        }
+
         private string GetTiTleForm()
         {
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
@@ -69,7 +86,9 @@ namespace BBI.JD.Forms
 
                 foreach (var rule in group)
                 {
-                    parent.Nodes.Add(new TreeNode(rule.Name));
+                    TreeNode node = new TreeNode(rule.Name);
+                    node.Tag = rule;
+                    parent.Nodes.Add(node);
                 }
 
                 treeView1.Nodes.Add(parent);
@@ -84,6 +103,23 @@ namespace BBI.JD.Forms
             {
                 child.Checked = false;
             }
+        }
+
+        private List<TreeNode> GetCheckedRules(TreeNodeCollection nodes)
+        {
+            List<TreeNode> nodesCheked = new List<TreeNode>();
+
+            foreach (TreeNode node in nodes)
+            {
+                if (node.Tag is RulesElement && node.Checked)
+                {
+                    nodesCheked.Add(node);
+                }
+
+                nodesCheked.AddRange(GetCheckedRules(node.Nodes));
+            }
+
+            return nodesCheked;
         }
     }
 }

@@ -11,7 +11,7 @@ using BBI.JD.Util;
 namespace BBI.JD
 {
     [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
-    class CheckerRules : IExternalCommand
+    class Command : IExternalCommand
     {
         private UIApplication application;
 
@@ -19,11 +19,11 @@ namespace BBI.JD
         {
             application = commandData.Application;
 
+            //Core.LoadAddin(@"D:\CODE\Visual Studio 2017\Projects\CheckerRules\AR_Rules\bin\Debug\AR_Rules.dll", true);
+
             try
             {
-                Core.LoadAddin(@"D:\WORK\Visual Studio Projects - 2017\Projects\CheckerRules\AR_Rules\bin\Debug\AR_Rules.dll");
-
-                //ShowForm();
+                ShowForm();
             }
             catch (Exception ex)
             {

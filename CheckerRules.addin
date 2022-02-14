@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<RevitAddIns>
+<!--
+	<AddIn Type="Application">
+		<Name>CheckerRules</Name>
+		<Assembly>"D:\CODE\Visual Studio 2017\Projects\CheckerRules\CheckerRules\bin\Debug\CheckerRules.dll"</Assembly>
+		<AddInId>9832828f-6825-4c9b-abb5-e64b6ffa5d56</AddInId>
+		<FullClassName>BBI.JD.Command</FullClassName>
+		<VendorId>ADSK</VendorId>
+		<VendorDescription>JD</VendorDescription>
+	</AddIn>
+-->
+
+	<AddIn Type="Command">
+		<Name>CheckerRules</Name>
+		<Assembly>"D:\CODE\Visual Studio 2017\Projects\CheckerRules\CheckerRules\bin\Debug\CheckerRules.dll"</Assembly>
+		<AddInId>9832828f-6825-4c9b-abb5-e64b6ffa5d56</AddInId>
+		<FullClassName>BBI.JD.Command</FullClassName>
+		<VendorId>ADSK</VendorId>
+		<VendorDescription>JD</VendorDescription>
+	</AddIn>
+</RevitAddIns>

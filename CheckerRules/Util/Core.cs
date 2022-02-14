@@ -29,25 +29,13 @@ namespace BBI.JD.Util
                     }
                 }
 
-                // TODO
-                // Only for testing propouse but in Revit enviroment all DLL was loaded automatically
-                AppDomain.CurrentDomain.AssemblyResolve += delegate (object sender, ResolveEventArgs e)
-                {
-                    if (e.Name == "RevitAPI, Version=21.0.0.0, Culture=neutral, PublicKeyToken=null")
-                    {
-                        return Assembly.LoadFrom(@"C:\Program Files\Autodesk\Revit 2021\RevitAPI.dll");
-                    }
-
-                    return null;
-                };
-
                 Assembly asm = Assembly.LoadFrom(path);
 
                 Addin addin = new Addin(path, asm.GetName().Version);
 
                 Dictionary<string, string> rulesId = new Dictionary<string, string>();
 
-                foreach (var type in asm.GetTypes())
+                foreach (var type in asm.GetTypes().Where(x => !x.IsAbstract))
                 {
                     dynamic obj = Activator.CreateInstance(type);
 
@@ -58,7 +46,7 @@ namespace BBI.JD.Util
                             throw new RepeatedRuleIdException("The addin has duplicates ID rules.");
                         }
 
-                        addin.Rules.Add(new Rule(((ICheckerRule)obj).Id, ((ICheckerRule)obj).Name, ((ICheckerRule)obj).Group, addin));
+                        addin.Rules.Add(new Rule(((ICheckerRule)obj).Id, ((ICheckerRule)obj).Name, ((ICheckerRule)obj).Group, type.AssemblyQualifiedName, addin));
 
                         rulesId.Add(((ICheckerRule)obj).Id, ((ICheckerRule)obj).Name);
                     }
@@ -76,6 +64,11 @@ namespace BBI.JD.Util
         public static bool IsAddinLoaded(string path)
         {
             return Config.GetAddinsLoaded().Cast<AddinsElement>().FirstOrDefault(x => x.Path == path) != null;
+        }
+
+        public static void Execute()
+        {
+
         }
     }
 
@@ -95,7 +88,7 @@ namespace BBI.JD.Util
         /// <summary>
         /// Method to map Addin class to AddinsElement use in Configuration
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Return an instance of <c>AddinsElement</c> with map values</returns>
         public AddinsElement ToAddinsElement()
         {
             AddinsElement addin = new AddinsElement();
@@ -117,25 +110,28 @@ namespace BBI.JD.Util
         private string Id;
         private string Name;
         private string Group;
+        private string AssemblyQualifiedName;
         private Addin Addin;
 
-        public Rule(string Id, string Name, string Group, Addin Addin) {
+        public Rule(string Id, string Name, string Group, string AssemblyQualifiedName, Addin Addin) {
             this.Id = Id;
             this.Name = Name;
             this.Group = Group;
+            this.AssemblyQualifiedName = AssemblyQualifiedName;
             this.Addin = Addin;
         }
 
         /// <summary>
         /// Method to map Rule class to RulesElement use in Configuration
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Return an instance of <c>RulesElement</c> with map values</returns>
         public RulesElement ToRulesElement()
         {
             RulesElement rule = new RulesElement();
             rule.Id = Id;
             rule.Name = Name;
             rule.Group = Group;
+            rule.AssemblyQualifiedName = AssemblyQualifiedName;
 
             return rule;
         }

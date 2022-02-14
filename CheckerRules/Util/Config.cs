@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Configuration;
 using System.IO;
+using System.Reflection;
 
 namespace BBI.JD.Util
 {
@@ -113,6 +114,16 @@ namespace BBI.JD.Util
                 ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
                 configFileMap.ExeConfigFilename = CFGFILE_PATH;
 
+                AppDomain.CurrentDomain.AssemblyResolve += delegate (object sender, ResolveEventArgs e)
+                {
+                    if (Assembly.GetExecutingAssembly().GetName().Name == e.Name)
+                    {
+                        return Assembly.GetExecutingAssembly();
+                    }
+
+                    return null;
+                };
+
                 config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
             }
             catch (Exception ex) { }
@@ -164,6 +175,8 @@ namespace BBI.JD.Util
 
     public class RulesElement : ConfigurationElement
     {
+        internal RulesCollection Parent { get; set; }
+
         [ConfigurationProperty("id", IsKey = true, IsRequired = true)]
         public string Id
         {
@@ -182,14 +195,22 @@ namespace BBI.JD.Util
             get { return (string)this["group"]; }
             set { this["group"] = value; }
         }
+        [ConfigurationProperty("assemblyQualifiedName", IsRequired = true)]
+        public string AssemblyQualifiedName
+        {
+            get { return (string)this["assemblyQualifiedName"]; }
+            set { this["assemblyQualifiedName"] = value; }
+        }
     }
 
     [ConfigurationCollection(typeof(RulesElement), AddItemName = "rule")]
     public class RulesCollection : ConfigurationElementCollection
     {
+        internal AddinsElement Parent { get; set; }
+
         protected override ConfigurationElement CreateNewElement()
         {
-            return new RulesElement();
+            return new RulesElement { Parent = this };
         }
 
         protected override object GetElementKey(ConfigurationElement element)
