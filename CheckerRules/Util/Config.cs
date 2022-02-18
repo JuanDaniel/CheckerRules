@@ -149,7 +149,12 @@ namespace BBI.JD.Util
         [ConfigurationProperty("rules", IsRequired = true, IsDefaultCollection = true)]
         public RulesCollection Rules
         {
-            get { return (RulesCollection)this["rules"]; }
+            get {
+                RulesCollection rulesCollection = (RulesCollection)this["rules"];
+                rulesCollection.Parent = this;
+
+                return rulesCollection;
+            }
             set { this["rules"] = value; }
         }
     }

@@ -50,7 +50,7 @@ namespace BBI.JD.Forms
 
             foreach (RulesElement rule in GetCheckedRules(treeView1.Nodes).Select(x => x.Tag).Cast<RulesElement>())
             {
-                //rule.CurrentConfiguration.
+                rules.Add(Core.GetInstance(rule));
             }
 
             if (rules.Count == 0)

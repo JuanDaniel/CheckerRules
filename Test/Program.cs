@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using BBI.JD.Util;
@@ -12,18 +13,22 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            using (var form = new BBI.JD.Forms.Form2())
+            ResolveDependencies();
+
+            /*using (var form = new BBI.JD.Forms.Form2())
             {
                 form.ShowDialog();
-            }
+            }*/
 
-            /*ResolveDependencies();
-            Core.LoadAddin(@"D:\CODE\Visual Studio 2017\Projects\CheckerRules\CheckerRules\bin\Debug\CheckerRules.dll", true);*/
+            Core.LoadAddin(@"D:\WORK\Visual Studio Projects - 2017\Projects\CheckerRules\AR_Rules\bin\Debug\AR_Rules.dll", true);
         }
 
         private static void ResolveDependencies()
         {
-            Dictionary<string, string> dependencies = new Dictionary<string, string>()
+            Assembly.LoadFrom(@"C:\Program Files\Autodesk\Revit 2019\RevitAPI.dll");
+            //Assembly.LoadFrom(@"C:\Program Files\Autodesk\Revit 2019\RevitAPIUI.dll");
+
+            /*Dictionary<string, string> dependencies = new Dictionary<string, string>()
             {
                 { "RevitAPI, Version=19.0.0.0, Culture=neutral, PublicKeyToken=null", @"C:\Program Files\Autodesk\Revit 2019\RevitAPI.dll" },
                 { "RevitAPIUI, Version=19.0.0.0, Culture=neutral, PublicKeyToken=null", @"C:\Program Files\Autodesk\Revit 2019\RevitAPIUI.dll" },
@@ -40,7 +45,7 @@ namespace Test
                 }
 
                 return null;
-            };
+            };*/
         }
     }
 }

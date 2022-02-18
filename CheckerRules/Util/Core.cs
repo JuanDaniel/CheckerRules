@@ -35,7 +35,7 @@ namespace BBI.JD.Util
 
                 Dictionary<string, string> rulesId = new Dictionary<string, string>();
 
-                foreach (var type in asm.GetTypes().Where(x => !x.IsAbstract))
+                foreach (Type type in asm.GetTypes().Where(x => !x.IsAbstract))
                 {
                     dynamic obj = Activator.CreateInstance(type);
 
@@ -64,6 +64,24 @@ namespace BBI.JD.Util
         public static bool IsAddinLoaded(string path)
         {
             return Config.GetAddinsLoaded().Cast<AddinsElement>().FirstOrDefault(x => x.Path == path) != null;
+        }
+
+        public static ICheckerRule GetInstance(RulesElement rule)
+        {
+            AddinsElement addin = rule.Parent.Parent;
+            Assembly asm = Assembly.LoadFrom(addin.Path);
+
+            try
+            {
+
+                //return (ICheckerRule)Activator.CreateInstance(asm.GetTypes().First(x => x.AssemblyQualifiedName == rule.AssemblyQualifiedName));
+                return (ICheckerRule)Activator.CreateInstance(asm.FullName, rule.AssemblyQualifiedName);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
 
         public static void Execute()
