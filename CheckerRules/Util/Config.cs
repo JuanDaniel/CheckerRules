@@ -200,6 +200,12 @@ namespace BBI.JD.Util
             get { return (string)this["group"]; }
             set { this["group"] = value; }
         }
+        [ConfigurationProperty("description", IsRequired = true)]
+        public string Description
+        {
+            get { return (string)this["description"]; }
+            set { this["description"] = value; }
+        }
         [ConfigurationProperty("assemblyQualifiedName", IsRequired = true)]
         public string AssemblyQualifiedName
         {

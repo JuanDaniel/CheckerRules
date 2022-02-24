@@ -19,7 +19,7 @@ namespace BBI.JD
         {
             application = commandData.Application;
 
-            //Core.LoadAddin(@"D:\CODE\Visual Studio 2017\Projects\CheckerRules\AR_Rules\bin\Debug\AR_Rules.dll", true);
+            //Core.LoadAddin(@"D:\WORK\Visual Studio Projects - 2017\Projects\CheckerRules\AR_Rules\bin\Debug\AR_Rules.dll", true);
 
             try
             {
@@ -37,7 +37,7 @@ namespace BBI.JD
 
         private void ShowForm()
         {
-            using (var form = new Forms.Form2())
+            using (var form = new Forms.Form2(application))
             {
                 form.ShowDialog();
             }

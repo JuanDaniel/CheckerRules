@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Autodesk.Revit.DB;
 
 namespace BBI.JD.Util
 {
@@ -12,7 +13,7 @@ namespace BBI.JD.Util
         /// Load DLL addin containing rules and add these to colletion rules loaded in <c>CheckerRules.config</c>
         /// </summary>
         /// <param name="path">Absolute path to DLL</param>
-        /// <param name="force">Absolute path to DLL</param>
+        /// <param name="force">Boolean to force reload DLL</param>
         public static void LoadAddin(string path, bool force = true)
         {
             if (File.Exists(path))
@@ -35,24 +36,48 @@ namespace BBI.JD.Util
 
                 Dictionary<string, string> rulesId = new Dictionary<string, string>();
 
-                foreach (Type type in asm.GetTypes().Where(x => !x.IsAbstract))
+                foreach (Type type in asm.GetICheckerRuleTypes())
                 {
-                    dynamic obj = Activator.CreateInstance(type);
-
-                    if (obj is ICheckerRule)
+                    var obj = (ICheckerRule)Activator.CreateInstance(type);
+                    
+                    if (rulesId.ContainsKey(obj.Id))
                     {
-                        if (rulesId.ContainsKey(((ICheckerRule)obj).Id))
-                        {
-                            throw new RepeatedRuleIdException("The addin has duplicates ID rules.");
-                        }
-
-                        addin.Rules.Add(new Rule(((ICheckerRule)obj).Id, ((ICheckerRule)obj).Name, ((ICheckerRule)obj).Group, type.AssemblyQualifiedName, addin));
-
-                        rulesId.Add(((ICheckerRule)obj).Id, ((ICheckerRule)obj).Name);
+                        throw new RepeatedRuleIdException("The addin has duplicates ID rules.");
                     }
+
+                    addin.Rules.Add(new Rule(obj.Id, obj.Name, obj.Group, obj.Description, type.AssemblyQualifiedName, addin));
+
+                    rulesId.Add(obj.Id, obj.Name);
                 }
 
                 Config.AddAddin(addin);
+            }
+        }
+
+        /// <summary>
+        /// Return only loadable types from assembly
+        /// </summary>
+        /// <param name="path">Assembly previously loaded</param>
+        /// <returns>Returns the types it implements <c>ICheckerRule</c> interface</returns>
+        public static IEnumerable<Type> GetICheckerRuleTypes(this Assembly asm)
+        {
+            if (asm == null)
+            {
+                throw new ArgumentNullException(nameof(asm));
+            }
+
+            try
+            {
+                return asm.GetTypes()
+                    .Where(x => typeof(ICheckerRule).IsAssignableFrom(x) && !x.IsAbstract && !x.IsInterface);
+            }
+            /*catch (ReflectionTypeLoadException ex)
+            {
+                return ex.Types.Where(t => t != null);
+            }*/
+            catch (Exception ex)
+            {
+                return Enumerable.Empty<Type>();
             }
         }
 
@@ -66,6 +91,11 @@ namespace BBI.JD.Util
             return Config.GetAddinsLoaded().Cast<AddinsElement>().FirstOrDefault(x => x.Path == path) != null;
         }
 
+        /// <summary>
+        /// Prepare an <c>ICheckerRule</c> instance from <c>RulesElement</c> given
+        /// </summary>
+        /// <param name="rule">Entry <c>RulesElement</c> from CheckerRules.config</param>
+        /// <returns>Return an <c>ICheckerRule</c> instance ready to use</returns>
         public static ICheckerRule GetInstance(RulesElement rule)
         {
             AddinsElement addin = rule.Parent.Parent;
@@ -73,20 +103,33 @@ namespace BBI.JD.Util
 
             try
             {
+                var obj = Activator.CreateInstance(asm.FullName, Type.GetType(rule.AssemblyQualifiedName).ToString());
 
-                //return (ICheckerRule)Activator.CreateInstance(asm.GetTypes().First(x => x.AssemblyQualifiedName == rule.AssemblyQualifiedName));
-                return (ICheckerRule)Activator.CreateInstance(asm.FullName, rule.AssemblyQualifiedName);
+                return (ICheckerRule)obj.Unwrap();
             }
             catch (Exception ex)
             {
-
-                throw;
+                return null;
             }
         }
 
-        public static void Execute()
+        public static void Execute(Document document, List<ICheckerRule> rules, bool fromLoadLinks = false)
         {
+            foreach (ICheckerRule rule in rules)
+            {
+                try
+                {
+                    List<Dictionary<string, string>> result = rule.Execute(document);
+                }
+                catch (NotImplementedException ex)
+                {
 
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
         }
     }
 
@@ -128,13 +171,15 @@ namespace BBI.JD.Util
         private string Id;
         private string Name;
         private string Group;
+        private string Description;
         private string AssemblyQualifiedName;
         private Addin Addin;
 
-        public Rule(string Id, string Name, string Group, string AssemblyQualifiedName, Addin Addin) {
+        public Rule(string Id, string Name, string Group, string Description, string AssemblyQualifiedName, Addin Addin) {
             this.Id = Id;
             this.Name = Name;
             this.Group = Group;
+            this.Description = Description;
             this.AssemblyQualifiedName = AssemblyQualifiedName;
             this.Addin = Addin;
         }
@@ -149,6 +194,7 @@ namespace BBI.JD.Util
             rule.Id = Id;
             rule.Name = Name;
             rule.Group = Group;
+            rule.Description = Description;
             rule.AssemblyQualifiedName = AssemblyQualifiedName;
 
             return rule;

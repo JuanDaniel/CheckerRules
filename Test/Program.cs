@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -20,15 +21,16 @@ namespace Test
                 form.ShowDialog();
             }*/
 
-            Core.LoadAddin(@"D:\WORK\Visual Studio Projects - 2017\Projects\CheckerRules\AR_Rules\bin\Debug\AR_Rules.dll", true);
+            Core.LoadAddin(Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "AR_Rules", "bin", "Debug", "AR_Rules.dll")), true);
         }
 
         private static void ResolveDependencies()
         {
-            Assembly.LoadFrom(@"C:\Program Files\Autodesk\Revit 2019\RevitAPI.dll");
+            //Assembly.LoadFrom(@"C:\Program Files\Autodesk\Revit 2019\RevitAPI.dll");
             //Assembly.LoadFrom(@"C:\Program Files\Autodesk\Revit 2019\RevitAPIUI.dll");
+            //Assembly.LoadFrom(Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "ICheckerRules", "bin", "Debug", "ICheckerRule.dll")));
 
-            /*Dictionary<string, string> dependencies = new Dictionary<string, string>()
+            Dictionary<string, string> dependencies = new Dictionary<string, string>()
             {
                 { "RevitAPI, Version=19.0.0.0, Culture=neutral, PublicKeyToken=null", @"C:\Program Files\Autodesk\Revit 2019\RevitAPI.dll" },
                 { "RevitAPIUI, Version=19.0.0.0, Culture=neutral, PublicKeyToken=null", @"C:\Program Files\Autodesk\Revit 2019\RevitAPIUI.dll" },
@@ -45,7 +47,7 @@ namespace Test
                 }
 
                 return null;
-            };*/
+            };
         }
     }
 }

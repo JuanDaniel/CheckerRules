@@ -8,15 +8,25 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
 using BBI.JD.Util;
 
 namespace BBI.JD.Forms
 {
-    public partial class Form2 : Form
+    public partial class Form2 : System.Windows.Forms.Form
     {
-        public Form2()
+        private UIApplication application;
+        private UIDocument uiDoc;
+        private Document document;
+
+        public Form2(UIApplication application)
         {
             InitializeComponent();
+
+            this.application = application;
+            uiDoc = application.ActiveUIDocument;
+            document = uiDoc.Document;
         }
 
         private void Form2_Load(object sender, EventArgs e)
@@ -50,7 +60,12 @@ namespace BBI.JD.Forms
 
             foreach (RulesElement rule in GetCheckedRules(treeView1.Nodes).Select(x => x.Tag).Cast<RulesElement>())
             {
-                rules.Add(Core.GetInstance(rule));
+                ICheckerRule instance = Core.GetInstance(rule);
+
+                if (instance != null)
+                {
+                    rules.Add(instance);
+                }
             }
 
             if (rules.Count == 0)
@@ -59,6 +74,8 @@ namespace BBI.JD.Forms
 
                 return;
             }
+
+            Core.Execute(document, rules, checkBox1.Checked);
         }
 
         private string GetTiTleForm()

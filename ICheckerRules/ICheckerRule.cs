@@ -9,6 +9,7 @@ namespace BBI.JD
         string Id { get; }
         string Name { get; }
         string Group { get; }
+        string Description { get; }
         List<Dictionary<string, string>> Execute(Document document);
     }
 }

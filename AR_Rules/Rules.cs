@@ -17,6 +17,8 @@ namespace AR_Rules
 
         public string Group { get => "Architecture"; }
 
+        public string Description { get => "Find ROOM & AREA not placed."; }
+
         public List<Dictionary<string, string>> Execute(Document document)
         {
             List<Dictionary<string, string>> elements = new List<Dictionary<string, string>>();
@@ -50,6 +52,8 @@ namespace AR_Rules
 
         public string Group { get => "Architecture"; }
 
+        public string Description { get => "Find ROOM & AREA not enclosed."; }
+
         public List<Dictionary<string, string>> Execute(Document document)
         {
             throw new NotImplementedException();
@@ -63,6 +67,8 @@ namespace AR_Rules
         public string Name { get => "Redundant"; }
 
         public string Group { get => "Architecture"; }
+
+        public string Description { get => "Find ROOM & AREA redundant."; }
 
         public List<Dictionary<string, string>> Execute(Document document)
         {
