@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security;
+using System.Security.Policy;
+using System.Threading;
 using Autodesk.Revit.DB;
+using SpreadsheetLight;
 
 namespace BBI.JD.Util
 {
@@ -113,13 +118,53 @@ namespace BBI.JD.Util
             }
         }
 
+        private static void VerifySecurityEvidenceForIsolatedStorage(Assembly assembly)
+        {
+            var isEvidenceFound = true;
+            var initialAppDomainEvidence = Thread.GetDomain().Evidence;
+
+            try
+            {
+                // this will fail when the current AppDomain Evidence is instantiated via COM or in PowerShell
+                using (var usfdAttempt1 = System.IO.IsolatedStorage.IsolatedStorageFile.GetUserStoreForDomain())
+                {
+                }
+            }
+            catch (System.IO.IsolatedStorage.IsolatedStorageException e)
+            {
+                isEvidenceFound = false;
+            }
+
+            if (!isEvidenceFound)
+            {
+                initialAppDomainEvidence.AddHostEvidence(new Url(assembly.Location));
+                initialAppDomainEvidence.AddHostEvidence(new Zone(SecurityZone.MyComputer));
+
+                var currentAppDomain = Thread.GetDomain();
+                var securityIdentityField = currentAppDomain.GetType().GetField("_SecurityIdentity", BindingFlags.Instance | BindingFlags.NonPublic);
+                securityIdentityField.SetValue(currentAppDomain, initialAppDomainEvidence);
+
+                var latestAppDomainEvidence = Thread.GetDomain().Evidence;
+            }
+        }
+
+        private static void ExportExcel()
+        {
+            VerifySecurityEvidenceForIsolatedStorage(Assembly.GetExecutingAssembly());
+
+            using (SLDocument sl = new SLDocument())
+            {
+                //sl.ImportDataTable()
+            }
+        }
+
         public static void Execute(Document document, List<ICheckerRule> rules, bool fromLoadLinks = false)
         {
             foreach (ICheckerRule rule in rules)
             {
                 try
                 {
-                    List<Dictionary<string, string>> result = rule.Execute(document);
+                    DataTable result = rule.Execute(document);
                 }
                 catch (NotImplementedException ex)
                 {

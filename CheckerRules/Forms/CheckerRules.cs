@@ -14,13 +14,20 @@ using BBI.JD.Util;
 
 namespace BBI.JD.Forms
 {
-    public partial class Form2 : System.Windows.Forms.Form
+    public partial class CheckerRules : System.Windows.Forms.Form
     {
         private UIApplication application;
         private UIDocument uiDoc;
         private Document document;
 
-        public Form2(UIApplication application)
+        public CheckerRules()
+        {
+            InitializeComponent();
+
+            btn_Execute.Enabled = false;
+        }
+
+        public CheckerRules(UIApplication application)
         {
             InitializeComponent();
 
@@ -29,12 +36,12 @@ namespace BBI.JD.Forms
             document = uiDoc.Document;
         }
 
-        private void Form2_Load(object sender, EventArgs e)
+        private void CheckerRules_Load(object sender, EventArgs e)
         {
             LoadRules();
         }
 
-        private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
+        private void tree_Rules_AfterCheck(object sender, TreeViewEventArgs e)
         {
             TreeNode node = e.Node;
 
@@ -44,21 +51,21 @@ namespace BBI.JD.Forms
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btn_CheckAll_Click(object sender, EventArgs e)
         {
             CheckAll();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void btn_Uncheck_Click(object sender, EventArgs e)
         {
             CheckAll(false);
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void btn_Execute_Click(object sender, EventArgs e)
         {
             List<ICheckerRule> rules = new List<ICheckerRule>();
 
-            foreach (RulesElement rule in GetCheckedRules(treeView1.Nodes).Select(x => x.Tag).Cast<RulesElement>())
+            foreach (RulesElement rule in GetCheckedRules(tree_Rules.Nodes).Select(x => x.Tag).Cast<RulesElement>())
             {
                 ICheckerRule instance = Core.GetInstance(rule);
 
@@ -75,7 +82,7 @@ namespace BBI.JD.Forms
                 return;
             }
 
-            Core.Execute(document, rules, checkBox1.Checked);
+            Core.Execute(document, rules, chk_Links.Checked);
         }
 
         private string GetTiTleForm()
@@ -108,15 +115,15 @@ namespace BBI.JD.Forms
                     parent.Nodes.Add(node);
                 }
 
-                treeView1.Nodes.Add(parent);
+                tree_Rules.Nodes.Add(parent);
             }
 
-            treeView1.ExpandAll();
+            tree_Rules.ExpandAll();
         }
 
         private void CheckAll(bool check = true)
         {
-            foreach (TreeNode child in treeView1.Nodes)
+            foreach (TreeNode child in tree_Rules.Nodes)
             {
                 child.Checked = false;
             }

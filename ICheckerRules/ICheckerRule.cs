@@ -1,6 +1,5 @@
 ﻿using Autodesk.Revit.DB;
-using System;
-using System.Collections.Generic;
+using System.Data;
 
 namespace BBI.JD
 {
@@ -10,6 +9,6 @@ namespace BBI.JD
         string Name { get; }
         string Group { get; }
         string Description { get; }
-        List<Dictionary<string, string>> Execute(Document document);
+        DataTable Execute(Document document);
     }
 }

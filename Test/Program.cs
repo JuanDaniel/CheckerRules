@@ -16,7 +16,7 @@ namespace Test
         {
             ResolveDependencies();
 
-            /*using (var form = new BBI.JD.Forms.Form2())
+            /*using (var form = new BBI.JD.Forms.CheckerRules())
             {
                 form.ShowDialog();
             }*/
