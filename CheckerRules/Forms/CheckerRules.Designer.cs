@@ -35,6 +35,7 @@
             this.chk_Links = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btn_Config = new System.Windows.Forms.Button();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.SuspendLayout();
             // 
             // tree_Rules
@@ -54,7 +55,7 @@
             // btn_CheckAll
             // 
             this.btn_CheckAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_CheckAll.Location = new System.Drawing.Point(246, 353);
+            this.btn_CheckAll.Location = new System.Drawing.Point(247, 353);
             this.btn_CheckAll.Name = "btn_CheckAll";
             this.btn_CheckAll.Size = new System.Drawing.Size(71, 23);
             this.btn_CheckAll.TabIndex = 1;
@@ -65,7 +66,7 @@
             // btn_Unckeck
             // 
             this.btn_Unckeck.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_Unckeck.Location = new System.Drawing.Point(326, 353);
+            this.btn_Unckeck.Location = new System.Drawing.Point(327, 353);
             this.btn_Unckeck.Name = "btn_Unckeck";
             this.btn_Unckeck.Size = new System.Drawing.Size(71, 23);
             this.btn_Unckeck.TabIndex = 2;
@@ -109,7 +110,8 @@
             // 
             // btn_Config
             // 
-            this.btn_Config.Location = new System.Drawing.Point(342, 13);
+            this.btn_Config.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_Config.Location = new System.Drawing.Point(344, 12);
             this.btn_Config.Name = "btn_Config";
             this.btn_Config.Size = new System.Drawing.Size(54, 23);
             this.btn_Config.TabIndex = 7;
@@ -146,5 +148,6 @@
         private System.Windows.Forms.CheckBox chk_Links;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btn_Config;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
     }
 }

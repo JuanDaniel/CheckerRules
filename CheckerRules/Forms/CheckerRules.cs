@@ -38,6 +38,10 @@ namespace BBI.JD.Forms
 
         private void CheckerRules_Load(object sender, EventArgs e)
         {
+            saveFileDialog1.Title = "Checker Rules results";
+            saveFileDialog1.Filter = "Spreadsheets|*.xls;*.xlsx";
+            saveFileDialog1.DefaultExt = "xlsx";
+
             LoadRules();
         }
 
@@ -63,6 +67,8 @@ namespace BBI.JD.Forms
 
         private void btn_Execute_Click(object sender, EventArgs e)
         {
+            ExecutionStats.Instance.Start = DateTime.Now;
+
             List<ICheckerRule> rules = new List<ICheckerRule>();
 
             foreach (RulesElement rule in GetCheckedRules(tree_Rules.Nodes).Select(x => x.Tag).Cast<RulesElement>())
@@ -82,7 +88,14 @@ namespace BBI.JD.Forms
                 return;
             }
 
-            Core.Execute(document, rules, chk_Links.Checked);
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                Core.Execute(document, rules, chk_Links.Checked, saveFileDialog1.FileName);
+
+                MessageBox.Show("Results are ready to be shown.", "Checker Rules results", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                Close();
+            }
         }
 
         private string GetTiTleForm()

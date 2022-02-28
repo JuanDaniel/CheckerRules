@@ -9,6 +9,7 @@ using System.Security.Policy;
 using System.Threading;
 using Autodesk.Revit.DB;
 using SpreadsheetLight;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace BBI.JD.Util
 {
@@ -118,6 +119,10 @@ namespace BBI.JD.Util
             }
         }
 
+        /// <summary>
+        /// Check security evidence to store excel result, if exception throws it resolve these
+        /// </summary>
+        /// <param name="assembly">Assembly executing</param>
         private static void VerifySecurityEvidenceForIsolatedStorage(Assembly assembly)
         {
             var isEvidenceFound = true;
@@ -148,33 +153,131 @@ namespace BBI.JD.Util
             }
         }
 
-        private static void ExportExcel()
+        /// <summary>
+        /// Prepare DataTable of execution stats to put in HOME worksheet excel result
+        /// </summary>
+        /// <returns>Return a <c>DataTable</c> with execution stats data</returns>
+        private static DataTable DataExecutionStats()
+        {
+            DataTable table = new DataTable();
+
+            table.Columns.AddRange(new DataColumn[] {
+                new DataColumn("KEY"),
+                new DataColumn("VALUE")
+            });
+
+            DataRow row = table.NewRow();
+            row["KEY"] = "Start";
+            row["VALUE"] = ExecutionStats.Instance.Start;
+            table.Rows.Add(row);
+
+            row = table.NewRow();
+            row["KEY"] = "End";
+            row["VALUE"] = ExecutionStats.Instance.End;
+            table.Rows.Add(row);
+
+            return table;
+        }
+
+        /// <summary>
+        /// Export excel result of each rule executed
+        /// </summary>
+        /// <param name="results">Rules's results</param>
+        /// <param name="path">Path to store excel</param>
+        private static void ExportExcel(Dictionary<ICheckerRule, DataTable> results, string path)
         {
             VerifySecurityEvidenceForIsolatedStorage(Assembly.GetExecutingAssembly());
 
             using (SLDocument sl = new SLDocument())
             {
-                //sl.ImportDataTable()
+                SLStyle h1 = new SLStyle();
+                h1.SetFontBold(true);
+                h1.SetFont("Calibri", 14);
+
+                SLStyle h2 = new SLStyle();
+                h2.SetFontBold(true);
+                h2.SetFont("Calibri", 12);
+
+                sl.RenameWorksheet(SLDocument.DefaultFirstSheetName, "HOME");
+                sl.SetCellValue("B2", "Checker Rules BBI Revit add-in");
+                sl.SetCellStyle("B2", h1);
+                sl.MergeWorksheetCells(2, 2, 2, 3);
+                sl.ImportDataTable("B4", DataExecutionStats(), false);
+                sl.AutoFitColumn(2, 3);
+                sl.DrawBorder("B4", "C5", BorderStyleValues.Thin);
+
+                foreach (var result in results)
+                {
+                    sl.AddWorksheet(result.Key.Name);
+                    sl.SetCellValue("A1", string.Format("Rule check results ({0})", result.Key.Name));
+                    sl.SetCellStyle("A1", h2);
+                    sl.MergeWorksheetCells(1, 1, 1, result.Value.Columns.Count);
+                    sl.ImportDataTable("A3", result.Value, true);
+                    sl.AutoFitColumn(1, result.Value.Columns.Count);
+
+                    SLTable table = sl.CreateTable(3, 1, 3 + result.Value.Rows.Count, result.Value.Columns.Count);
+                    table.SetTableStyle(SLTableStyleTypeValues.Medium9);
+                    sl.InsertTable(table);
+                }
+
+                sl.SelectWorksheet("HOME");
+                sl.SaveAs(path);
             }
         }
 
-        public static void Execute(Document document, List<ICheckerRule> rules, bool fromLoadLinks = false)
+        /// <summary>
+        /// Prepare DataTable for exception rule
+        /// </summary>
+        /// <param name="rule">Rule executed</param>
+        /// <param name="ex">Exception throws</param>
+        /// <returns>Return a <c>DataTable</c> with exception message</returns>
+        private static DataTable DataExceptionResult(ICheckerRule rule, Exception ex)
         {
+            DataTable table = new DataTable(rule.Name);
+
+            table.Columns.AddRange(new DataColumn[] {
+                new DataColumn("ERROR")
+            });
+
+            DataRow row = table.NewRow();
+
+            row["ERROR"] = ex.Message;
+
+            table.Rows.Add(row);
+
+            return table;
+        }
+
+        /// <summary>
+        /// Prepare DataTable for exception rule
+        /// </summary>
+        /// <param name="document">Revit document from execute rules</param>
+        /// <param name="rules">Rules to execute</param>
+        /// <param name="fromLoadLinks">Indicate whether the rule is also executed on the links</param>
+        /// <param name="excelPath">Excel path to store the result</param>
+        public static void Execute(Document document, List<ICheckerRule> rules, bool fromLoadLinks, string excelPath)
+        {
+            Dictionary<ICheckerRule, DataTable> results = new Dictionary<ICheckerRule, DataTable>();
+
             foreach (ICheckerRule rule in rules)
             {
                 try
                 {
-                    DataTable result = rule.Execute(document);
+                    results.Add(rule, rule.Execute(document));
                 }
                 catch (NotImplementedException ex)
                 {
-
+                    results.Add(rule, DataExceptionResult(rule, ex));
                 }
                 catch (Exception ex)
                 {
-
+                    results.Add(rule, DataExceptionResult(rule, ex));
                 }
             }
+
+            ExecutionStats.Instance.End = DateTime.Now;
+
+            ExportExcel(results, excelPath);
         }
     }
 
@@ -244,6 +347,30 @@ namespace BBI.JD.Util
 
             return rule;
         }
+    }
+
+    public class ExecutionStats
+    {
+        private ExecutionStats(){}
+
+        private static ExecutionStats instance = null;
+
+        public static ExecutionStats Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new ExecutionStats();
+                }
+
+                return instance;
+            }
+        }
+
+        public DateTime Start { get; set; }
+
+        public DateTime End { get; set; }
     }
 
     public class RepeatedRuleIdException : Exception {

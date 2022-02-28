@@ -15,6 +15,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICheckerRule", "ICheckerRules\ICheckerRule.csproj", "{55048DE4-2BB2-4312-BFC0-D4FBBE838F8B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckerRules", "CheckerRules\CheckerRules.csproj", "{9832828F-6825-4C9B-ABB5-E64B6FFA5D56}"
+	ProjectSection(ProjectDependencies) = postProject
+		{11E05A13-3629-46F4-BBDF-DB258A579C92} = {11E05A13-3629-46F4-BBDF-DB258A579C92}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
