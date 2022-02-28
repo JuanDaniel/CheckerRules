@@ -26,8 +26,11 @@ namespace AR_Rules
                 new DataColumn("Name"),
                 new DataColumn("Level"),
                 new DataColumn("Phase"),
+                new DataColumn("Workset"),
                 new DataColumn("File")
             });
+
+            Parameter parameter;
 
             foreach (ElementType type in new ElementType[] { ElementType.ROOM, ElementType.AREA })
             {
@@ -36,16 +39,40 @@ namespace AR_Rules
                     DataRow row = table.NewRow();
 
                     row["ID"] = element.Id.ToString();
-                    row["Type"] = type.ToString();
+
+                    if (type == ElementType.AREA) {
+                        parameter = element.get_Parameter(BuiltInParameter.AREA_SCHEME_ID);
+                        Element area = document.GetElement(parameter.AsElementId());
+                        if (area != null)
+                        {
+                            row["Type"] = string.Format("{0} ({1})", type.ToString(), area.Name);
+                        }
+                        else
+                        {
+                            row["Type"] = type.ToString();
+                        }
+                    }
+                    else
+                    {
+                        row["Type"] = type.ToString();
+                    }
+
                     row["Name"] = element.Name;
                     row["Level"] = element.Level != null ? element.Level.Name : "";
 
                     if (type == ElementType.ROOM)
                     {
-                        row["Phase"] = element.get_Parameter(BuiltInParameter.ROOM_PHASE);
+                        parameter = element.get_Parameter(BuiltInParameter.ROOM_PHASE);
+                        row["Phase"] = parameter.AsValueString();
+                    }
+
+                    if (element.Document.IsWorkshared)
+                    {
+                        parameter = element.get_Parameter(BuiltInParameter.ELEM_PARTITION_PARAM);
+                        row["Workset"] = parameter.AsValueString();
                     }
                     
-                    row["File"] = element.Document.PathName;
+                    row["File"] = element.Document.IsWorkshared ? ModelPathUtils.ConvertModelPathToUserVisiblePath(element.Document.GetWorksharingCentralModelPath()) : element.Document.PathName;
 
                     table.Rows.Add(row);
                 }
@@ -75,8 +102,11 @@ namespace AR_Rules
                 new DataColumn("Name"),
                 new DataColumn("Level"),
                 new DataColumn("Phase"),
+                new DataColumn("Workset"),
                 new DataColumn("File")
             });
+
+            Parameter parameter;
 
             foreach (ElementType type in new ElementType[] { ElementType.ROOM, ElementType.AREA })
             {
@@ -85,11 +115,41 @@ namespace AR_Rules
                     DataRow row = table.NewRow();
 
                     row["ID"] = element.Id.ToString();
-                    row["Type"] = type.ToString();
+
+                    if (type == ElementType.AREA)
+                    {
+                        parameter = element.get_Parameter(BuiltInParameter.AREA_SCHEME_ID);
+                        Element area = document.GetElement(parameter.AsElementId());
+                        if (area != null)
+                        {
+                            row["Type"] = string.Format("{0} ({1})", type.ToString(), area.Name);
+                        }
+                        else
+                        {
+                            row["Type"] = type.ToString();
+                        }
+                    }
+                    else
+                    {
+                        row["Type"] = type.ToString();
+                    }
+
                     row["Name"] = element.Name;
                     row["Level"] = element.Level != null ? element.Level.Name : "";
-                    //row["Phase"] = 
-                    row["File"] = element.Document.PathName;
+
+                    if (type == ElementType.ROOM)
+                    {
+                        parameter = element.get_Parameter(BuiltInParameter.ROOM_PHASE);
+                        row["Phase"] = parameter.AsValueString();
+                    }
+
+                    if (element.Document.IsWorkshared)
+                    {
+                        parameter = element.get_Parameter(BuiltInParameter.ELEM_PARTITION_PARAM);
+                        row["Workset"] = parameter.AsValueString();
+                    }
+
+                    row["File"] = element.Document.IsWorkshared ? ModelPathUtils.ConvertModelPathToUserVisiblePath(element.Document.GetWorksharingCentralModelPath()) : element.Document.PathName;
 
                     table.Rows.Add(row);
                 }
@@ -119,8 +179,11 @@ namespace AR_Rules
                 new DataColumn("Name"),
                 new DataColumn("Level"),
                 new DataColumn("Phase"),
+                new DataColumn("Workset"),
                 new DataColumn("File")
             });
+
+            Parameter parameter;
 
             foreach (ElementType type in new ElementType[] { ElementType.ROOM, ElementType.AREA })
             {
@@ -129,11 +192,41 @@ namespace AR_Rules
                     DataRow row = table.NewRow();
 
                     row["ID"] = element.Id.ToString();
-                    row["Type"] = type.ToString();
+
+                    if (type == ElementType.AREA)
+                    {
+                        parameter = element.get_Parameter(BuiltInParameter.AREA_SCHEME_ID);
+                        Element area = document.GetElement(parameter.AsElementId());
+                        if (area != null)
+                        {
+                            row["Type"] = string.Format("{0} ({1})", type.ToString(), area.Name);
+                        }
+                        else
+                        {
+                            row["Type"] = type.ToString();
+                        }
+                    }
+                    else
+                    {
+                        row["Type"] = type.ToString();
+                    }
+
                     row["Name"] = element.Name;
                     row["Level"] = element.Level != null ? element.Level.Name : "";
-                    //row["Phase"] = 
-                    row["File"] = element.Document.PathName;
+
+                    if (type == ElementType.ROOM)
+                    {
+                        parameter = element.get_Parameter(BuiltInParameter.ROOM_PHASE);
+                        row["Phase"] = parameter.AsValueString();
+                    }
+
+                    if (element.Document.IsWorkshared)
+                    {
+                        parameter = element.get_Parameter(BuiltInParameter.ELEM_PARTITION_PARAM);
+                        row["Workset"] = parameter.AsValueString();
+                    }
+
+                    row["File"] = element.Document.IsWorkshared ? ModelPathUtils.ConvertModelPathToUserVisiblePath(element.Document.GetWorksharingCentralModelPath()) : element.Document.PathName;
 
                     table.Rows.Add(row);
                 }

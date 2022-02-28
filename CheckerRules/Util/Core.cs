@@ -248,6 +248,16 @@ namespace BBI.JD.Util
             return table;
         }
 
+        private static Dictionary<RevitLinkType, Document> GetLinksDocument(Document document)
+        {
+            Dictionary<RevitLinkType, Document> linksDocument = new Dictionary<RevitLinkType, Document>();
+
+            FilteredElementCollector links = new FilteredElementCollector(document)
+                    .OfClass(typeof(RevitLinkType));
+
+            return linksDocument;
+        }
+
         /// <summary>
         /// Prepare DataTable for exception rule
         /// </summary>
@@ -259,11 +269,23 @@ namespace BBI.JD.Util
         {
             Dictionary<ICheckerRule, DataTable> results = new Dictionary<ICheckerRule, DataTable>();
 
+            if (fromLoadLinks)
+            {
+                Dictionary<RevitLinkType, Document> linksDocument = GetLinksDocument(document);
+            }
+            
             foreach (ICheckerRule rule in rules)
             {
                 try
                 {
-                    results.Add(rule, rule.Execute(document));
+                    if (fromLoadLinks)
+                    {
+                        // Merge result from host and links
+                    }
+                    else
+                    {
+                        results.Add(rule, rule.Execute(document));
+                    }
                 }
                 catch (NotImplementedException ex)
                 {
