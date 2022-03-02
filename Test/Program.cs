@@ -21,7 +21,7 @@ namespace Test
                 form.ShowDialog();
             }*/
 
-            //Core.LoadAddin(Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "AR_Rules", "bin", "Debug", "AR_Rules.dll")), true);
+            Core.LoadAddin(Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "AR_Rules", "bin", "Debug", "AR_Rules.dll")), true);
             Core.LoadAddin(Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "MA_Rules", "bin", "Debug", "MA_Rules.dll")), true);
         }
 

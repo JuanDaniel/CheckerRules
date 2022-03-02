@@ -248,12 +248,38 @@ namespace BBI.JD.Util
             return table;
         }
 
-        private static Dictionary<RevitLinkType, Document> GetLinksDocument(Document document)
+        /// <summary>
+        /// Get RVT links inserted into the host and for the sub-links get only the attached links
+        /// </summary>
+        /// <param name="document">Document from get links</param>
+        /// <param name="linksDocument">Links dictionary result use in recursive call</param>
+        /// <param name="onlyLoaded">Flag to filter only loaded links</param>
+        /// <returns>Return a dictionary compose key path and value document from link</returns>
+        private static Dictionary<string, Document> GetRVTLinks(Document document, Dictionary<string, Document> linksDocument, bool onlyLoaded = false)
         {
-            Dictionary<RevitLinkType, Document> linksDocument = new Dictionary<RevitLinkType, Document>();
+            foreach (RevitLinkType link in new FilteredElementCollector(document)
+                    .OfClass(typeof(RevitLinkType)))
+            {
+                if (onlyLoaded && !RevitLinkType.IsLoaded(document, link.Id)) {
+                    continue;
+                }
 
-            FilteredElementCollector links = new FilteredElementCollector(document)
-                    .OfClass(typeof(RevitLinkType));
+                string path = ModelPathUtils.ConvertModelPathToUserVisiblePath(link.GetExternalFileReference().GetAbsolutePath());
+
+                if (!linksDocument.ContainsKey(path))
+                {
+                    Document doc = document.Application.Documents.Cast<Document>()
+                            .Where(d => d.PathName == path)
+                                .FirstOrDefault();
+
+                    if (doc != null)
+                    {
+                        linksDocument.Add(path, doc);
+
+                        linksDocument = GetRVTLinks(doc, linksDocument, onlyLoaded);
+                    }
+                }
+            }
 
             return linksDocument;
         }
@@ -271,7 +297,7 @@ namespace BBI.JD.Util
 
             if (fromLoadLinks)
             {
-                Dictionary<RevitLinkType, Document> linksDocument = GetLinksDocument(document);
+                Dictionary<string, Document> linksDocument = GetRVTLinks(document, new Dictionary<string, Document>());
             }
             
             foreach (ICheckerRule rule in rules)
