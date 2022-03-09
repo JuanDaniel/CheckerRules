@@ -176,6 +176,44 @@ namespace BBI.JD.Util
             row["VALUE"] = ExecutionStats.Instance.End;
             table.Rows.Add(row);
 
+            // Empty row
+            row = table.NewRow();
+            row["KEY"] = string.Empty;
+            row["VALUE"] = string.Empty;
+            table.Rows.Add(row);
+
+            row = table.NewRow();
+            row["KEY"] = "Rules";
+            row["VALUE"] = string.Empty;
+            table.Rows.Add(row);
+
+            foreach (string rule in ExecutionStats.Rules)
+            {
+                row = table.NewRow();
+                row["KEY"] = string.Empty;
+                row["VALUE"] = rule;
+                table.Rows.Add(row);
+            }
+
+            // Empty row
+            row = table.NewRow();
+            row["KEY"] = string.Empty;
+            row["VALUE"] = string.Empty;
+            table.Rows.Add(row);
+
+            row = table.NewRow();
+            row["KEY"] = "Files";
+            row["VALUE"] = string.Empty;
+            table.Rows.Add(row);
+
+            foreach (string file in ExecutionStats.Files)
+            {
+                row = table.NewRow();
+                row["KEY"] = string.Empty;
+                row["VALUE"] = file;
+                table.Rows.Add(row);
+            }
+
             return table;
         }
 
@@ -198,14 +236,16 @@ namespace BBI.JD.Util
                 h2.SetFontBold(true);
                 h2.SetFont("Calibri", 12);
 
+                // HOME sheet
                 sl.RenameWorksheet(SLDocument.DefaultFirstSheetName, "HOME");
                 sl.SetCellValue("B2", "Checker Rules BBI Revit add-in");
                 sl.SetCellStyle("B2", h1);
                 sl.MergeWorksheetCells(2, 2, 2, 3);
                 sl.ImportDataTable("B4", DataExecutionStats(), false);
                 sl.AutoFitColumn(2, 3);
-                sl.DrawBorder("B4", "C5", BorderStyleValues.Thin);
+                sl.DrawBorder(4, 2, 5 + ExecutionStats.Rules.Count + ExecutionStats.Files.Count + 4, 3, BorderStyleValues.Thin);
 
+                // One sheet peer rule results
                 foreach (var result in results)
                 {
                     sl.AddWorksheet(result.Key.Name);
@@ -249,7 +289,7 @@ namespace BBI.JD.Util
         }
 
         /// <summary>
-        /// Get RVT links inserted into the host and for the sub-links get only the attached links
+        /// Get RVT links inserted into the host and for the sublinks get only the attached links
         /// </summary>
         /// <param name="document">Document from get links</param>
         /// <param name="linksDocument">Links dictionary result use in recursive call</param>
@@ -295,23 +335,33 @@ namespace BBI.JD.Util
         {
             Dictionary<ICheckerRule, DataTable> results = new Dictionary<ICheckerRule, DataTable>();
 
+            Dictionary<string, Document> linksDocument = new Dictionary<string, Document>();
+
             if (fromLoadLinks)
             {
-                Dictionary<string, Document> linksDocument = GetRVTLinks(document, new Dictionary<string, Document>());
+                linksDocument = GetRVTLinks(document, new Dictionary<string, Document>());
             }
             
             foreach (ICheckerRule rule in rules)
             {
+                ExecutionStats.Rules.Add(string.Format("{0} ({1})", rule.Name, rule.Description));
+
                 try
                 {
-                    if (fromLoadLinks)
+                    DataTable result = rule.Execute(document);
+
+                    ExecutionStats.Files.Add(document.IsWorkshared ? 
+                        ModelPathUtils.ConvertModelPathToUserVisiblePath(document.GetWorksharingCentralModelPath()) : document.PathName);
+
+                    foreach (KeyValuePair<string, Document> link in linksDocument)
                     {
-                        // Merge result from host and links
+                        result.Merge(rule.Execute(link.Value));
+
+                        ExecutionStats.Files.Add(link.Value.IsWorkshared ?
+                            ModelPathUtils.ConvertModelPathToUserVisiblePath(link.Value.GetWorksharingCentralModelPath()) : link.Value.PathName);
                     }
-                    else
-                    {
-                        results.Add(rule, rule.Execute(document));
-                    }
+
+                    results.Add(rule, result);
                 }
                 catch (NotImplementedException ex)
                 {
@@ -399,7 +449,7 @@ namespace BBI.JD.Util
 
     public class ExecutionStats
     {
-        private ExecutionStats(){}
+        private ExecutionStats() { }
 
         private static ExecutionStats instance = null;
 
@@ -410,6 +460,8 @@ namespace BBI.JD.Util
                 if (instance == null)
                 {
                     instance = new ExecutionStats();
+                    Rules = new List<string>();
+                    Files = new NoRepeatedList<string>();
                 }
 
                 return instance;
@@ -419,9 +471,24 @@ namespace BBI.JD.Util
         public DateTime Start { get; set; }
 
         public DateTime End { get; set; }
+
+        public static List<string> Rules { get; set; }
+
+        public static NoRepeatedList<string> Files { get; set; }
     }
 
     public class RepeatedRuleIdException : Exception {
         public RepeatedRuleIdException(string message) : base(message){}
+    }
+
+    public class NoRepeatedList<T> : List<T>
+    {
+        public new void Add(T item)
+        {
+            if (!Contains(item))
+            {
+                base.Add(item);
+            }
+        }
     }
 }

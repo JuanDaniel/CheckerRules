@@ -3,6 +3,7 @@ using BBI.JD;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -127,7 +128,66 @@ namespace MA_Rules
 
         public DataTable Execute(Document document)
         {
-            throw new NotImplementedException();
+            DataTable table = new DataTable(Name);
+
+            table.Columns.AddRange(new DataColumn[] {
+                new DataColumn("Type"),
+                new DataColumn("Link Name"),
+                new DataColumn("Status"),
+                new DataColumn("Reference Type"),
+                new DataColumn("Positions Not Saved"),
+                new DataColumn("Path Type"),
+                new DataColumn("Size"),
+                new DataColumn("File"),
+            });
+
+            foreach (RevitLinkType link in new FilteredElementCollector(document)
+                    .OfClass(typeof(RevitLinkType)))
+            {
+                // only the root links
+                if (link.GetParentId() == ElementId.InvalidElementId)
+                {
+                    DataRow row = table.NewRow();
+                    row["Type"] = "RVT";
+                    row["Link Name"] = link.Name;
+                    row["Status"] = RevitLinkType.IsLoaded(document, link.Id) ? "Loaded" : "Unloaded";
+                    row["Reference Type"] = link.AttachmentType.ToString();
+                    row["Positions Not Saved"] = link.HasSaveablePositions() ? "Yes" : "No";
+                    row["Path Type"] = link.PathType.ToString();
+                    
+                    string path = document.IsWorkshared ? ModelPathUtils.ConvertModelPathToUserVisiblePath(document.GetWorksharingCentralModelPath()) : document.PathName;
+
+                    if (File.Exists(path)) {
+                        FileInfo info = new FileInfo(path);
+                        row["Size"] = ToSize(info.Length, SizeUnits.MB, true);
+                        row["File"] = document.IsWorkshared ? ModelPathUtils.ConvertModelPathToUserVisiblePath(document.GetWorksharingCentralModelPath()) : document.PathName;
+                    }
+                    else {
+                        row["File"] = "ERROR";
+                    }
+
+                    table.Rows.Add(row);
+                }
+            }
+
+            return table;
+        }
+
+        private enum SizeUnits
+        {
+            Byte, KB, MB, GB, TB, PB, EB, ZB, YB
+        }
+
+        private string ToSize(long value, SizeUnits unit, bool unitSuffix = false)
+        {
+            string size = (value / Math.Pow(1024, (long)unit)).ToString("0.00");
+
+            if (unitSuffix)
+            {
+                size = string.Format("{0} {1}", size, unit);
+            }
+
+            return size;
         }
     }
 

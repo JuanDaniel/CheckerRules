@@ -158,5 +158,13 @@ namespace BBI.JD.Forms
 
             return nodesCheked;
         }
+
+        private void chk_Links_CheckedChanged(object sender, EventArgs e)
+        {
+            if (((CheckBox)sender).Checked)
+            {
+                MessageBox.Show("For sublinks the rules will only be executed on attachments.", "Checker Rules links", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
     }
 }

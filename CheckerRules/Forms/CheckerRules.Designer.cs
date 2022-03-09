@@ -93,10 +93,11 @@
             this.chk_Links.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.chk_Links.Location = new System.Drawing.Point(12, 355);
             this.chk_Links.Name = "chk_Links";
-            this.chk_Links.Size = new System.Drawing.Size(176, 21);
+            this.chk_Links.Size = new System.Drawing.Size(164, 21);
             this.chk_Links.TabIndex = 5;
-            this.chk_Links.Text = "Execute rules on # links";
+            this.chk_Links.Text = "Execute rules on links";
             this.chk_Links.UseVisualStyleBackColor = true;
+            this.chk_Links.CheckedChanged += new System.EventHandler(this.chk_Links_CheckedChanged);
             // 
             // label1
             // 
