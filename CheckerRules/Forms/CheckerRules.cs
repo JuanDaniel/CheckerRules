@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -11,14 +9,16 @@ using System.Windows.Forms;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using BBI.JD.Util;
+using Form = System.Windows.Forms.Form;
 
 namespace BBI.JD.Forms
 {
-    public partial class CheckerRules : System.Windows.Forms.Form
+    public partial class CheckerRules : Form
     {
         private UIApplication application;
         private UIDocument uiDoc;
         private Document document;
+        private Form formConfig;
 
         public CheckerRules()
         {
@@ -43,6 +43,16 @@ namespace BBI.JD.Forms
             saveFileDialog1.DefaultExt = "xlsx";
 
             LoadRules();
+        }
+
+        private void btn_Config_Click(object sender, EventArgs e)
+        {
+            if (formConfig == null)
+            {
+                formConfig = new ConfigForm(this);
+            }
+
+            formConfig.ShowDialog(this);
         }
 
         private void tree_Rules_AfterCheck(object sender, TreeViewEventArgs e)
@@ -138,7 +148,7 @@ namespace BBI.JD.Forms
         {
             foreach (TreeNode child in tree_Rules.Nodes)
             {
-                child.Checked = false;
+                child.Checked = check;
             }
         }
 

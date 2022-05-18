@@ -316,6 +316,7 @@ namespace BBI.JD.Util
                     {
                         linksDocument.Add(path, doc);
 
+                        // Get sublinks only for attached link
                         linksDocument = GetRVTLinks(doc, linksDocument, onlyLoaded);
                     }
                 }
@@ -325,7 +326,7 @@ namespace BBI.JD.Util
         }
 
         /// <summary>
-        /// Prepare DataTable for exception rule
+        /// Executes each rule and prepares its results to be inserted in the resulting excel
         /// </summary>
         /// <param name="document">Revit document from execute rules</param>
         /// <param name="rules">Rules to execute</param>

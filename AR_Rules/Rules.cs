@@ -235,4 +235,69 @@ namespace AR_Rules
             return table;
         }
     }
+
+    public class LEVELS : ICheckerRule
+    {
+        public string Id { get => "553a06e6-9bba-43b4-9f5f-7753b79d3f92"; }
+
+        public string Name { get => "Levels"; }
+
+        public string Group { get => "Architecture"; }
+
+        public string Description { get => "Get all levels."; }
+
+        public DataTable Execute(Document document)
+        {
+            DataTable table = new DataTable(Name);
+
+            table.Columns.AddRange(new DataColumn[] {
+                new DataColumn("Name"),
+                new DataColumn("Elevation"),
+                new DataColumn("Elevation Base"),
+                new DataColumn("Type"),
+                new DataColumn("Structural"),
+                new DataColumn("Workset"),
+                new DataColumn("File")
+            });
+
+            foreach (Level level in new FilteredElementCollector(document)
+                    .OfClass(typeof(Level)))
+            {
+                DataRow row = table.NewRow();
+                row["Name"] = level.Name;
+                row["Elevation"] = level.Elevation;
+
+                Parameter param;
+
+                LevelType type = document.GetElement(level.GetTypeId()) as LevelType;
+                if (type != null)
+                {
+                    param = type.get_Parameter(BuiltInParameter.LEVEL_RELATIVE_BASE_TYPE);
+                    if (param != null)
+                    {
+                        row["Elevation Base"] = param.AsValueString();
+                    }
+
+                    row["Type"] = type.Name;
+                }
+
+                param = level.get_Parameter(BuiltInParameter.LEVEL_IS_STRUCTURAL);
+                if (param != null)
+                {
+                    row["Structural"] = param.AsInteger() == 1 ? "YES" : "NO";
+                }
+
+                Workset workset = document.GetWorksetTable().GetWorkset(level.WorksetId);
+                if (workset != null)
+                {
+                    row["Workset"] = workset.Name;
+                }
+
+                row["File"] = document.IsWorkshared ? ModelPathUtils.ConvertModelPathToUserVisiblePath(document.GetWorksharingCentralModelPath()) : document.PathName;
+                table.Rows.Add(row);
+            }
+
+            return table;
+        }
+    }
 }

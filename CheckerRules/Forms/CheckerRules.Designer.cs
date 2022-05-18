@@ -48,17 +48,17 @@
             this.tree_Rules.ItemHeight = 18;
             this.tree_Rules.Location = new System.Drawing.Point(12, 38);
             this.tree_Rules.Name = "tree_Rules";
-            this.tree_Rules.Size = new System.Drawing.Size(386, 308);
-            this.tree_Rules.TabIndex = 0;
+            this.tree_Rules.Size = new System.Drawing.Size(390, 316);
+            this.tree_Rules.TabIndex = 2;
             this.tree_Rules.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.tree_Rules_AfterCheck);
             // 
             // btn_CheckAll
             // 
             this.btn_CheckAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_CheckAll.Location = new System.Drawing.Point(247, 353);
+            this.btn_CheckAll.Location = new System.Drawing.Point(251, 361);
             this.btn_CheckAll.Name = "btn_CheckAll";
             this.btn_CheckAll.Size = new System.Drawing.Size(71, 23);
-            this.btn_CheckAll.TabIndex = 1;
+            this.btn_CheckAll.TabIndex = 4;
             this.btn_CheckAll.Text = "Check all";
             this.btn_CheckAll.UseVisualStyleBackColor = true;
             this.btn_CheckAll.Click += new System.EventHandler(this.btn_CheckAll_Click);
@@ -66,10 +66,10 @@
             // btn_Unckeck
             // 
             this.btn_Unckeck.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_Unckeck.Location = new System.Drawing.Point(327, 353);
+            this.btn_Unckeck.Location = new System.Drawing.Point(331, 361);
             this.btn_Unckeck.Name = "btn_Unckeck";
             this.btn_Unckeck.Size = new System.Drawing.Size(71, 23);
-            this.btn_Unckeck.TabIndex = 2;
+            this.btn_Unckeck.TabIndex = 5;
             this.btn_Unckeck.Text = "Uncheck all";
             this.btn_Unckeck.UseVisualStyleBackColor = true;
             this.btn_Unckeck.Click += new System.EventHandler(this.btn_Uncheck_Click);
@@ -78,10 +78,10 @@
             // 
             this.btn_Execute.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.btn_Execute.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F);
-            this.btn_Execute.Location = new System.Drawing.Point(146, 416);
+            this.btn_Execute.Location = new System.Drawing.Point(148, 424);
             this.btn_Execute.Name = "btn_Execute";
             this.btn_Execute.Size = new System.Drawing.Size(124, 55);
-            this.btn_Execute.TabIndex = 4;
+            this.btn_Execute.TabIndex = 6;
             this.btn_Execute.Text = "Execute";
             this.btn_Execute.UseVisualStyleBackColor = true;
             this.btn_Execute.Click += new System.EventHandler(this.btn_Execute_Click);
@@ -91,10 +91,10 @@
             this.chk_Links.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.chk_Links.AutoSize = true;
             this.chk_Links.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.chk_Links.Location = new System.Drawing.Point(12, 355);
+            this.chk_Links.Location = new System.Drawing.Point(12, 363);
             this.chk_Links.Name = "chk_Links";
             this.chk_Links.Size = new System.Drawing.Size(164, 21);
-            this.chk_Links.TabIndex = 5;
+            this.chk_Links.TabIndex = 3;
             this.chk_Links.Text = "Execute rules on links";
             this.chk_Links.UseVisualStyleBackColor = true;
             this.chk_Links.CheckedChanged += new System.EventHandler(this.chk_Links_CheckedChanged);
@@ -112,18 +112,19 @@
             // btn_Config
             // 
             this.btn_Config.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_Config.Location = new System.Drawing.Point(344, 12);
+            this.btn_Config.Location = new System.Drawing.Point(348, 12);
             this.btn_Config.Name = "btn_Config";
             this.btn_Config.Size = new System.Drawing.Size(54, 23);
-            this.btn_Config.TabIndex = 7;
+            this.btn_Config.TabIndex = 1;
             this.btn_Config.Text = "Config";
             this.btn_Config.UseVisualStyleBackColor = true;
+            this.btn_Config.Click += new System.EventHandler(this.btn_Config_Click);
             // 
             // CheckerRules
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(410, 483);
+            this.ClientSize = new System.Drawing.Size(414, 491);
             this.Controls.Add(this.btn_Config);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.chk_Links);
@@ -133,7 +134,7 @@
             this.Controls.Add(this.tree_Rules);
             this.Name = "CheckerRules";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Checker Rules";
+            this.Text = "Checker Rules"; // GetTiTleForm();
             this.Load += new System.EventHandler(this.CheckerRules_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
