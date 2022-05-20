@@ -29,13 +29,16 @@
         private void InitializeComponent()
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigForm));
             this.btn_Add = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.grid_Addins = new System.Windows.Forms.DataGridView();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.cID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cRules = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cVersion = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cPath = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cUpdate = new System.Windows.Forms.DataGridViewButtonColumn();
             ((System.ComponentModel.ISupportInitialize)(this.grid_Addins)).BeginInit();
             this.SuspendLayout();
@@ -47,9 +50,10 @@
             this.btn_Add.Location = new System.Drawing.Point(442, 9);
             this.btn_Add.Name = "btn_Add";
             this.btn_Add.Size = new System.Drawing.Size(71, 31);
-            this.btn_Add.TabIndex = 9;
+            this.btn_Add.TabIndex = 1;
             this.btn_Add.Text = "Add";
             this.btn_Add.UseVisualStyleBackColor = true;
+            this.btn_Add.Click += new System.EventHandler(this.btn_Add_Click);
             // 
             // label1
             // 
@@ -75,13 +79,18 @@
             this.cName,
             this.cRules,
             this.cVersion,
+            this.cPath,
             this.cUpdate});
             this.grid_Addins.Location = new System.Drawing.Point(13, 49);
             this.grid_Addins.Name = "grid_Addins";
             this.grid_Addins.Size = new System.Drawing.Size(500, 315);
-            this.grid_Addins.TabIndex = 10;
+            this.grid_Addins.TabIndex = 2;
             this.grid_Addins.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.grid_Addins_CellContentClick);
             this.grid_Addins.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.grid_Addins_CellPainting);
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.Filter = "DLL|*.dll";
             // 
             // cID
             // 
@@ -110,6 +119,11 @@
             this.cVersion.Name = "cVersion";
             this.cVersion.ReadOnly = true;
             // 
+            // cPath
+            // 
+            this.cPath.HeaderText = "Path";
+            this.cPath.Name = "cPath";
+            // 
             // cUpdate
             // 
             this.cUpdate.HeaderText = "Update";
@@ -126,6 +140,7 @@
             this.Controls.Add(this.grid_Addins);
             this.Controls.Add(this.btn_Add);
             this.Controls.Add(this.label1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ConfigForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Checker Rules config";
@@ -142,10 +157,12 @@
         private System.Windows.Forms.Button btn_Add;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.DataGridView grid_Addins;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.DataGridViewTextBoxColumn cID;
         private System.Windows.Forms.DataGridViewTextBoxColumn cName;
         private System.Windows.Forms.DataGridViewTextBoxColumn cRules;
         private System.Windows.Forms.DataGridViewTextBoxColumn cVersion;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cPath;
         private System.Windows.Forms.DataGridViewButtonColumn cUpdate;
     }
 }

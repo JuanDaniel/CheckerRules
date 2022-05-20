@@ -81,7 +81,7 @@ namespace BBI.JD.Util
             }
         }
 
-        public static void RemoveAddin(string path)
+        public static void RemoveAddin(string id)
         {
             Configuration config = GetConfiguration();
 
@@ -93,7 +93,7 @@ namespace BBI.JD.Util
                 {
                     AddinsCollection addins = new AddinsCollection();
 
-                    foreach (var element in GetAddinsLoaded().Cast<AddinsElement>().Where(x => x.Path != path))
+                    foreach (var element in GetAddinsLoaded().Cast<AddinsElement>().Where(x => x.Id != id))
                     {
                         addins.Add(element);
                     }
@@ -134,7 +134,13 @@ namespace BBI.JD.Util
 
     public class AddinsElement : ConfigurationElement
     {
-        [ConfigurationProperty("path", IsKey = true, IsRequired = true)]
+        [ConfigurationProperty("id", IsKey = true, IsRequired = true)]
+        public string Id
+        {
+            get { return (string)this["id"]; }
+            set { this["id"] = value; }
+        }
+        [ConfigurationProperty("path", IsRequired = true)]
         public string Path
         {
             get { return (string)this["path"]; }

@@ -28,14 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CheckerRules));
             this.tree_Rules = new System.Windows.Forms.TreeView();
             this.btn_CheckAll = new System.Windows.Forms.Button();
             this.btn_Unckeck = new System.Windows.Forms.Button();
-            this.btn_Execute = new System.Windows.Forms.Button();
             this.chk_Links = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btn_Config = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.pg_Progress = new System.Windows.Forms.ProgressBar();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.btn_Execute = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // tree_Rules
@@ -74,18 +77,6 @@
             this.btn_Unckeck.UseVisualStyleBackColor = true;
             this.btn_Unckeck.Click += new System.EventHandler(this.btn_Uncheck_Click);
             // 
-            // btn_Execute
-            // 
-            this.btn_Execute.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.btn_Execute.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F);
-            this.btn_Execute.Location = new System.Drawing.Point(148, 424);
-            this.btn_Execute.Name = "btn_Execute";
-            this.btn_Execute.Size = new System.Drawing.Size(124, 55);
-            this.btn_Execute.TabIndex = 6;
-            this.btn_Execute.Text = "Execute";
-            this.btn_Execute.UseVisualStyleBackColor = true;
-            this.btn_Execute.Click += new System.EventHandler(this.btn_Execute_Click);
-            // 
             // chk_Links
             // 
             this.chk_Links.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -120,11 +111,44 @@
             this.btn_Config.UseVisualStyleBackColor = true;
             this.btn_Config.Click += new System.EventHandler(this.btn_Config_Click);
             // 
+            // pg_Progress
+            // 
+            this.pg_Progress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pg_Progress.Location = new System.Drawing.Point(12, 396);
+            this.pg_Progress.Name = "pg_Progress";
+            this.pg_Progress.Size = new System.Drawing.Size(390, 19);
+            this.pg_Progress.TabIndex = 7;
+            this.pg_Progress.Visible = false;
+            // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.WorkerReportsProgress = true;
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
+            // btn_Execute
+            // 
+            this.btn_Execute.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.btn_Execute.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F);
+            this.btn_Execute.Image = global::CheckerRules.Properties.Resources.btn_execute;
+            this.btn_Execute.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btn_Execute.Location = new System.Drawing.Point(148, 425);
+            this.btn_Execute.Name = "btn_Execute";
+            this.btn_Execute.Size = new System.Drawing.Size(124, 55);
+            this.btn_Execute.TabIndex = 6;
+            this.btn_Execute.Text = "Execute";
+            this.btn_Execute.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btn_Execute.UseVisualStyleBackColor = true;
+            this.btn_Execute.Click += new System.EventHandler(this.btn_Execute_Click);
+            // 
             // CheckerRules
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(414, 491);
+            this.Controls.Add(this.pg_Progress);
             this.Controls.Add(this.btn_Config);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.chk_Links);
@@ -132,9 +156,10 @@
             this.Controls.Add(this.btn_Unckeck);
             this.Controls.Add(this.btn_CheckAll);
             this.Controls.Add(this.tree_Rules);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "CheckerRules";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Checker Rules"; // GetTiTleForm();
+            this.Text = "Checker Rules";
             this.Load += new System.EventHandler(this.CheckerRules_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -151,5 +176,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btn_Config;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.ProgressBar pg_Progress;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }

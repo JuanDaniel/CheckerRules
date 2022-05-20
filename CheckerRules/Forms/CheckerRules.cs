@@ -77,7 +77,8 @@ namespace BBI.JD.Forms
 
         private void btn_Execute_Click(object sender, EventArgs e)
         {
-            ExecutionStats.Instance.Start = DateTime.Now;
+            btn_Execute.Enabled = false;
+            pg_Progress.Visible = true;
 
             List<ICheckerRule> rules = new List<ICheckerRule>();
 
@@ -100,11 +101,7 @@ namespace BBI.JD.Forms
 
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                Core.Execute(document, rules, chk_Links.Checked, saveFileDialog1.FileName);
-
-                MessageBox.Show("Results are ready to be shown.", "Checker Rules results", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                Close();
+                backgroundWorker1.RunWorkerAsync(rules);
             }
         }
 
@@ -115,8 +112,10 @@ namespace BBI.JD.Forms
             return string.Format("{0} ({1}.{2}.{3}.{4})", "Checker Rules", version.Major, version.Minor, version.Build, version.Revision);
         }
 
-        private void LoadRules()
+        public void LoadRules()
         {
+            tree_Rules.Nodes.Clear();
+
             List<RulesElement> rules = new List<RulesElement>();
 
             foreach (var rc in Config.GetAddinsLoaded().Cast<AddinsElement>()
@@ -135,6 +134,7 @@ namespace BBI.JD.Forms
                 {
                     TreeNode node = new TreeNode(rule.Name);
                     node.Tag = rule;
+                    node.ToolTipText = rule.Description;
                     parent.Nodes.Add(node);
                 }
 
@@ -174,6 +174,33 @@ namespace BBI.JD.Forms
             if (((CheckBox)sender).Checked)
             {
                 MessageBox.Show("For sublinks the rules will only be executed on attachments.", "Checker Rules links", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            Core.Execute(document, (List<ICheckerRule>)e.Argument, chk_Links.Checked, saveFileDialog1.FileName, backgroundWorker1);
+        }
+
+        private void backgroundWorker1_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
+        {
+            pg_Progress.Value = e.ProgressPercentage;
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                pg_Progress.Value = 0;
+                btn_Execute.Enabled = true;
+
+                MessageBox.Show(string.Format("An error has occurred:\n{0}", e.Error.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                MessageBox.Show("Results are ready to be shown.", "Checker Rules results", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                Close();
             }
         }
     }
