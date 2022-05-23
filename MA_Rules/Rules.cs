@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Autodesk.Revit.ApplicationServices;
 
 namespace MA_Rules
 {
@@ -386,7 +387,7 @@ namespace MA_Rules
             foreach (FailureMessage warning in warnings)
             {
                 DataRow row = table.NewRow();
-                row["Priority"] = GetPriority(warning.GetDescriptionText());
+                row["Priority"] = GetPriority(warning.GetDescriptionText(), document.Application.Language);
                 row["Warning"] = warning.GetDescriptionText();
                 row["Element Ids"] = string.Join(", ", warning.GetFailingElements());
                 row["File"] = document.IsWorkshared ? ModelPathUtils.ConvertModelPathToUserVisiblePath(document.GetWorksharingCentralModelPath()) : document.PathName;
@@ -396,10 +397,11 @@ namespace MA_Rules
             return table;
         }
 
-        private string GetPriority(string message)
+        private string GetPriority(string message, LanguageType language)
         {
             // check Revit language
-            if (Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName != "en") {
+            if (language != LanguageType.English_GB && language != LanguageType.English_USA)
+            {
                 return "- UNCLASSIFIED -";
             }
 

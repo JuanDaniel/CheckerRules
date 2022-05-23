@@ -43,7 +43,14 @@ namespace BBI.JD.Util
 
                 asm = Assembly.LoadFrom(path);
 
-                Config.AddAddin(PrepareAddin(asm, path));
+                Addin addin = PrepareAddin(asm, path);
+
+                if (addin.Rules.Count == 0)
+                {
+                    return LoadResultType.NO_IMPLEMENTED_RULE;
+                }
+
+                Config.AddAddin(addin);
 
                 return LoadResultType.SUCCESS;
             }
@@ -582,6 +589,7 @@ namespace BBI.JD.Util
     public enum LoadResultType
     {
         SUCCESS,
+        NO_IMPLEMENTED_RULE,
         ALREADY_ADDED,
         FILE_NOT_FOUND
     }

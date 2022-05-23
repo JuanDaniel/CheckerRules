@@ -93,6 +93,9 @@ namespace BBI.JD.Forms
                         LoadAddins();
                         changed = true;
                         break;
+                    case LoadResultType.NO_IMPLEMENTED_RULE:
+                        MessageBox.Show("The addin does not implement any checking rules.", "No checking rules", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                        break;
                     case LoadResultType.ALREADY_ADDED:
                         MessageBox.Show("The addin is already loaded.", "Already added", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                         break;

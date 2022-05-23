@@ -65,6 +65,7 @@ namespace BBI.JD
             Uri uriImage = new Uri(string.Concat(folder, "/icon_32x32.png"));
             BitmapImage largeImage = new BitmapImage(uriImage);
             pushButton.LargeImage = largeImage;
+            pushButton.Image = largeImage;
 
             return Result.Succeeded;
         }

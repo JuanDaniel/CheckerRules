@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using BBI.JD.Util;
+using Autodesk.RevitAddIns;
 
 namespace Test
 {
@@ -14,15 +15,22 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            ResolveDependencies();
+            // ResolveDependencies();
 
             /*using (var form = new BBI.JD.Forms.CheckerRules())
             {
                 form.ShowDialog();
             }*/
 
-            Core.LoadAddin(Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "AR_Rules", "bin", "Debug", "AR_Rules.dll")), true);
-            Core.LoadAddin(Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "MA_Rules", "bin", "Debug", "MA_Rules.dll")), true);
+            // Core.LoadAddin(Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "AR_Rules", "bin", "Debug", "AR_Rules.dll")), true);
+            // Core.LoadAddin(Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "MA_Rules", "bin", "Debug", "MA_Rules.dll")), true);
+
+            string folder = "C:\\Program Files\\BBI\\Add-in CheckerRules";
+
+            foreach (string dll in Directory.EnumerateFiles(Path.Combine(folder, "Addins"), "*.dll"))
+            {
+                LoadResultType result = Core.LoadAddin(dll);
+            }
         }
 
         private static void ResolveDependencies()
