@@ -131,7 +131,7 @@ namespace Installer
             List<string> paths = new List<string>();
 
             RevitProduct product = RevitProductUtility.GetAllInstalledRevitProducts()
-                .FirstOrDefault(x => x.Version == RevitVersion.Revit2019);
+                .FirstOrDefault(x => x.Version != RevitVersion.Unknown);
 
             if (product != null){
                 DirectoryInfo parent = Directory.GetParent(product.AllUsersAddInFolder);
